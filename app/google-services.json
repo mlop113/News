@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "652647496840",
+    "firebase_url": "https://news-daeeb.firebaseio.com",
+    "project_id": "news-daeeb",
+    "storage_bucket": "news-daeeb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652647496840:android:d7f31ee96f0621cc",
+        "android_client_info": {
+          "package_name": "com.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652647496840-vp59v25se0i27sr89c2v2vb4vgdbala9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android",
+            "certificate_hash": "19f96a70d2fb81423816676f7b460df4e37dd3a7"
+          }
+        },
+        {
+          "client_id": "652647496840-0gudnvtqaka0f21117t8lusvgcreh9rk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeP_JPCCzr9G9bNFR5x-a9VaMq0Ua4HfA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652647496840-0gudnvtqaka0f21117t8lusvgcreh9rk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

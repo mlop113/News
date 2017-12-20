@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="gray">#D8D8D8</color>
+    <color name="splashscreen_bgtext">#2c000000</color>
+    <color name="splashscreen_text">#a0000000</color>
+    <color name="textViewLogin_while">#ffffff</color>
+    <color name="expand_while">#ffffff</color>
+    <color name="back_ground_color">#dddddd</color>
+    <color name="colorBorder">#a7a4a4</color>
+    <color name="text_search">#000000</color>
+    <color name="textcolor_selected">#e0be0101</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="red">#c2231d</color>
+    <color name="tittle_item_plus_menu">#ff343434</color>
+    <color name="line_gray">#ffdddddd</color>
+    <color name="bg_hotnews">#f20d01</color>
+    <color name="bg_hotnewstext">#f23c31</color>
+    <color name="bg_textviewtitile">#51212121</color>
+    <color name="whellpicker_ItemTextColor">#3F51B5</color>
+    <color name="whellpicker_selectedItemTextColor">#2c000000</color>
+    <color name="whellpicker_IndicatorColor">#5488b0fa</color>
+    <color name="likedcomment">@android:color/holo_blue_dark</color>
+    <color name="notlikedcomment">@android:color/black</color>
+</resources>

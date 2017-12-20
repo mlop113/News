@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_parent_plus_menu"
+    style="@style/view_match"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        style="@style/view_match_width"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:orientation="vertical"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout_FilterbyDate"
+            android:layout_width="fill_parent"
+            android:layout_height="45.0dip"
+            android:background="@drawable/list_item_selector"
+            android:orientation="horizontal"
+            android:padding="2.0dip"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="35.0dip"
+                android:layout_height="fill_parent"
+                android:paddingLeft="5.0dip"
+                android:src="@drawable/ic_menu_camera" />
+
+            <TextView
+                style="@style/view_match"
+                android:gravity="center_vertical"
+                android:padding="5.0dip"
+                android:text="filter"
+                android:textColor="@color/tittle_item_plus_menu" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

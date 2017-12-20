@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewBarName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/linearLayoutAction"
+            android:layout_marginLeft="@dimen/WheelMargins"
+            android:layout_marginRight="@dimen/WheelMargins"
+            android:gravity="center"
+            android:text="Fillter"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="fill_parent"
+            android:layout_height="0.200000024px"
+            android:layout_marginTop="@dimen/WheelMargins"
+            android:background="@color/line_gray" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutWhellPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewBarName"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="@dimen/WheelMargins"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="@dimen/WheelMargins"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wheel_date_picker_day_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="@string/Day"
+                android:textColor="#536D8A"
+                android:textStyle="bold" />
+
+            <com.aigestudio.wheelpicker.widgets.WheelDayPicker
+                android:id="@+id/wheel_date_picker_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_search"
+                android:paddingEnd="@dimen/WheelMargins"
+                android:paddingLeft="@dimen/WheelMargins"
+                android:paddingRight="@dimen/WheelMargins"
+                android:paddingStart="@dimen/WheelMargins" />
+
+            <TextView
+                android:id="@+id/wheel_date_picker_month_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
+                android:text="@string/Month"
+                android:textColor="#536D8A"
+                android:textStyle="bold" />
+
+            <com.aigestudio.wheelpicker.widgets.WheelMonthPicker
+                android:id="@+id/wheel_date_picker_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_search"
+                android:paddingEnd="@dimen/WheelMargins"
+                android:paddingLeft="@dimen/WheelMargins"
+                android:paddingRight="@dimen/WheelMargins"
+                android:paddingStart="@dimen/WheelMargins" />
+
+            <TextView
+                android:id="@+id/wheel_date_picker_year_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
+                android:text="@string/Year"
+                android:textColor="#536D8A"
+                android:textStyle="bold" />
+
+            <com.aigestudio.wheelpicker.widgets.WheelYearPicker
+                android:id="@+id/wheel_date_picker_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_search"
+                android:paddingEnd="@dimen/WheelMargins"
+                android:paddingLeft="@dimen/WheelMargins"
+                android:paddingRight="@dimen/WheelMargins"
+                android:paddingStart="@dimen/WheelMargins" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="fill_parent"
+            android:layout_height="0.200000024px"
+            android:layout_alignBottom="@+id/linearLayoutWhellPicker"
+            android:background="@color/line_gray" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayoutWhellPicker"
+            android:layout_margin="@dimen/WheelMargins"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/btnlogin_google_background"
+                android:gravity="center"
+                android:padding="@dimen/WheelMargins"
+                android:text="Cancel" />
+
+            <TextView
+                android:id="@+id/textViewOk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/btnlogin_google_background"
+                android:gravity="center"
+                android:padding="@dimen/WheelMargins"
+                android:text="@android:string/ok" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</RelativeLayout>
