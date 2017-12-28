@@ -29,6 +29,8 @@
         <activity
             android:name=".Login"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ForgetPassword"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Activity_Fragment.PostsOnRequestActivity"
             android:theme="@style/AppTheme.NoActionBar" />

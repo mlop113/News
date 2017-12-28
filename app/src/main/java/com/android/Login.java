@@ -52,43 +52,23 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private FirebaseAuth.AuthStateListener fireAuthListener;
     EditText edtuser;
     EditText edtpass;
-    TextView txtLogin;
+    TextView txtLogin,txtforget;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        edtuser = findViewById(R.id.editTextPhoneNumber);
-        edtpass=findViewById(R.id.editTextPassword);
+        edtuser = findViewById(R.id.edtLoginName);
+        edtpass=findViewById(R.id.edtPass);
         txtLogin=findViewById(R.id.textViewButtonLogin);
+        txtforget=findViewById(R.id.textViewForget);
+        txtforget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this,ForgetPassword.class);
+                startActivity(intent);
+            }
+        });
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        edtuser.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    if (edtpass.getText().toString()==null) {
-                        Toast.makeText(Login.this, "Vui lòng nhập password", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Login(edtuser.getText().toString(),edtpass.getText().toString());
-                    }
-                    return  true;
-                }
-                return false;
-            }
-        });
-        edtpass.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    Login(edtuser.getText().toString(),edtpass.getText().toString());
-                    return true;
-                }
-                return false;
-            }
-        });
         txtLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +84,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                 .build();
         signInButton = (SignInButton)findViewById(R.id.signin);
+        setButtonText(signInButton,"Sign in with Google Account");
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,7 +105,16 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         };
 
     }
-
+    protected void setButtonText (SignInButton googleSinOutButton, String buttonText) {
+        for (int i = 0; i < signInButton.getChildCount (); i++) {
+            View v = signInButton.getChildAt (i);
+            if (v instanceof TextView) {
+                TextView tv = (TextView) v;
+                tv.setText (buttonText);
+                return;
+            }
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -134,6 +124,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     @Override
     protected void onStop() {
         super.onStop();
+        revokeAccess();
         if (fireAuthListener != null)
         {
             firebaseAuth.removeAuthStateListener(fireAuthListener);
@@ -179,14 +170,14 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent );
     }
-    private void Login(final String username,final String password)
+    private void Login(final String UserLoginName,final String password)
     {
         databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot dataPost : dataSnapshot.getChildren())
                 {
-                    if(dataPost.getValue(UserMember.class).getLoginName().contentEquals(username))
+                    if(dataPost.getValue(UserMember.class).getLoginName().contentEquals(UserLoginName))
                     {
                         if(dataPost.getValue(UserMember.class).getPassword().contentEquals(password))
                         {
@@ -195,15 +186,13 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         }
                         else
                         {
-                            Toast.makeText(Login.this,"Password không chính xác", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
                             edtpass.setText(null);
                         }
                     }
-                    else
-                    {
-                        Toast.makeText(Login.this,"Username không chính xác", Toast.LENGTH_SHORT).show();
-                        edtuser.setText(null);
-                        edtpass.setText(null);
+                    else {
+                        Toast.makeText(Login.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
+
                     }
                 }
             }
@@ -216,6 +205,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+    private void revokeAccess()
+    {
+        firebaseAuth.signOut();
 
     }
 }
