@@ -69,7 +69,6 @@
             android:layout_alignLeft="@+id/edtLoginName"
             android:layout_alignRight="@+id/edtLoginName"
             android:layout_alignStart="@+id/edtLoginName"
-
             android:layout_below="@+id/edtLoginName"
             android:drawableLeft="@drawable/unlocked"
             android:drawablePadding="10dp"
@@ -90,10 +89,10 @@
             android:layout_marginBottom="15dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@drawable/btnlogin_background"
+            android:background="#F8F8FF"
             android:gravity="center"
-            android:text="Login with your account"
-            android:textColor="@color/white" />
+            android:text="Đăng nhập"
+            android:textColor="@color/black" />
 
         <!--<LinearLayout
             android:id="@+id/linearLayoutLoginSocial"
@@ -141,7 +140,7 @@
                 android:id="@+id/textViewForget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Forget Password"
+                android:text="Quên mật khẩu?"
                 android:textColor="#d4d4d4"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -157,9 +156,10 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/relativeLayoutLoginInfo">
     <TextView
+        android:id="@+id/txtregister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resgister"
+        android:text="Đăng kí"
         android:textColor="#d4d4d4"
         android:textSize="18sp"
         android:textStyle="bold"/>

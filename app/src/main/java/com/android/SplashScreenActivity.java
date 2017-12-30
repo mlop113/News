@@ -64,16 +64,17 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-       // intuser();
+        // intuser();
         // initDataInFireBase();
     }
-private void intuser()
-{
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference ref = database.getReference("");
-    DatabaseReference postsRef = ref.child("UserMembers");
-    postsRef.push().setValue(new UserMember("03 Lê Văn Việt", "24-01-2107 14:20:00","ngoc117@gmail.com","https://www.facebook.com/photo.php?fbid=1928810227435906&set=pcb.1928813470768915&type=3","ngoc3","Phan Vu Xuan Ngoc","12345","0981418198","Nam",postsRef.push().getKey().toString() ));
-}
+
+    private void intuser() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("");
+        DatabaseReference postsRef = ref.child("UserMembers");
+        postsRef.push().setValue(new UserMember("03 Lê Văn Việt", "24-01-2107 14:20:00", "ngoc117@gmail.com", "https://www.facebook.com/photo.php?fbid=1928810227435906&set=pcb.1928813470768915&type=3", "ngoc3", "Phan Vu Xuan Ngoc", "12345", "0981418198", "Nam", postsRef.push().getKey().toString()));
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -185,22 +186,21 @@ private void intuser()
     }
 
 
-}
-   /* private void initDataInFireBase(){
+    private void initDataInFireBase() {
         List<Post> listPost = new ArrayList<>();
         List<String> listTag1 = new ArrayList<>();
 
 
         listTag1.add("Android");
 
-        Post post1 = new Post("Anh Thi Trần","Công Nghệ",new HashMap<String,Comment>()
+        Post post1 = new Post("Anh Thi Trần", "Công Nghệ", new HashMap<String, Comment>()
                 , "Smartphone mới của Google không có độ bền như một số sản phẩm cùng tầm giá. Nó có thể dễ dàng bị xước, bẻ cong và cắt thành từng mảng. Mới đây, kênh YouTube của JerrRigEverything, phổ biến với những thử nghiệm “phá hoại” các loại điện thoại đã đăng tải clip về Pixel 2. Theo đó, smartphone đến từ Google bị tra tấn bằng cách đốt, khắc hình thậm chí cắt bằng dao cắt giấy. Đầu tiên, JerryRigEverything thử nghiệm chống xước của màn hình. Phải ở mức 6 với lực tì tay mạnh, Google Pixel 2 mới bắt đầu xuất hiện những vết xước nhỏ. Tiếp theo đó, trang YouTube này bắt đầu bẻ cong sản phẩm. Không giống như những sản phẩm cao cấp khác, smartphone của Google bị bẻ cong khá dễ dàng. Có thể thấy, nếu so sánh với dòng Galaxy S8 hay iPhone 8 mà JerrRigEverything từng thử nghiệm, sản phẩm không được bền như vậy. Có thể nói, sản phẩm Google Pixel 2 không có độ bền giống như các smartphone khác. Tuy nhiên, nó mang nhiều tính năng mới để có thể cạnh tranh trực tiếp với iPhone hay dòng S của Samsung."
                 , "02-09-2017 14:00:01", "Smartphone mới của Google không có độ bền như một số sản phẩm cùng tầm giá."
                 , "https://znews-photo-td.zadn.vn/w660/Uploaded/OFH_oazszstq/2017_10_23/Screen_Shot_20171023_at_211412.jpg",
-                "postId2",listTag1,"Google Pixel 2 dễ dàng bị bẻ cong trong thử nghiệm?",new ArrayList<String>(),new ArrayList<String>());
+                "postId2", listTag1, "Google Pixel 2 dễ dàng bị bẻ cong trong thử nghiệm?", new ArrayList<String>(), new ArrayList<String>());
 
         listPost.add(post1);
-        for(final Post post:listPost){
+        for (final Post post : listPost) {
             databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).push().setValue(post, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(final DatabaseError databaseError, final DatabaseReference databaseReference1) {
@@ -211,8 +211,7 @@ private void intuser()
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     List<String> listCategory = (List<String>) dataSnapshot.getValue();
-                                    if(!listCategory.contains(post.getcategory()))
-                                    {
+                                    if (!listCategory.contains(post.getcategory())) {
                                         listCategory.add(post.getcategory());
                                         databaseReference.child(AppConfig.FIREBASE_FIELD_CATEGORIES).setValue(listCategory);
                                     }
@@ -229,8 +228,8 @@ private void intuser()
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     List<String> listTag = (List<String>) dataSnapshot.getValue();
-                                    for(String tag: post.getTags()){
-                                        if(!listTag.contains(tag)){
+                                    for (String tag : post.getTags()) {
+                                        if (!listTag.contains(tag)) {
                                             listTag.add(tag);
                                             databaseReference.child(AppConfig.FIREBASE_FIELD_TAGS).setValue(listTag);
                                         }
@@ -247,5 +246,6 @@ private void intuser()
                 }
             });
         }
-    }*/
+    }
+}
 

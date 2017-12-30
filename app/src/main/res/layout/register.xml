@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:theme="@style/AppTheme.NoActionBar"
+    android:background="@drawable/abcde"
+    android:layout_height="match_parent"
+    tools:context=".ForgetPassword">
+
+    <ImageView
+        android:id="@+id/imageViewBackground"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitXY" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+      
+        android:alpha="0.3"
+        android:layout_alignParentTop="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đăng Kí Thành Viên"
+        android:id="@+id/txtxtx"
+        android:layout_marginTop="15dp"
+        android:drawableTint="@color/white"
+        android:layout_marginBottom="10dp"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutLoginInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtxtx"
+        android:layout_marginTop="10dp"
+        android:paddingEnd="40dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingStart="40dp">
+
+        <EditText
+            android:id="@+id/input_loginname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:drawableLeft="@drawable/user"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:hint="Tên Đăng Nhập"
+            android:imeOptions="actionNext"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+
+        <EditText
+            android:id="@+id/input_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/input_loginname"
+            android:layout_alignLeft="@+id/input_loginname"
+            android:layout_alignRight="@+id/input_loginname"
+            android:layout_alignStart="@+id/input_loginname"
+            android:layout_below="@+id/input_loginname"
+
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:ems="10"
+            android:hint=" Email"
+            android:imeOptions="actionGo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+        <EditText
+            android:id="@+id/input_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/input_email"
+            android:layout_alignLeft="@+id/input_email"
+            android:layout_alignRight="@+id/input_email"
+            android:layout_alignStart="@+id/input_email"
+            android:layout_below="@+id/input_email"
+            android:drawableLeft="@drawable/unlocked"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:hint="Mật Khẩu"
+            android:imeOptions="actionGo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+        <EditText
+            android:id="@+id/input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/input_password"
+            android:layout_alignLeft="@+id/input_password"
+            android:layout_alignRight="@+id/input_password"
+            android:layout_alignStart="@+id/input_password"
+            android:layout_below="@+id/input_password"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:ems="10"
+            android:hint="Họ và Tên"
+            android:imeOptions="actionGo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+        <EditText
+            android:id="@+id/input_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/input_name"
+            android:layout_alignLeft="@+id/input_name"
+            android:layout_alignRight="@+id/input_name"
+            android:layout_alignStart="@+id/input_name"
+            android:layout_below="@+id/input_name"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:ems="10"
+            android:hint="Địa Chỉ"
+            android:imeOptions="actionGo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+        <EditText
+            android:id="@+id/input_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/input_address"
+            android:layout_alignLeft="@+id/input_address"
+            android:layout_alignRight="@+id/input_address"
+            android:layout_alignStart="@+id/input_address"
+            android:layout_below="@+id/input_address"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:ems="10"
+            android:hint="SĐT"
+            android:imeOptions="actionGo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15dp" />
+
+    </RelativeLayout>
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:id="@+id/radiog"
+        android:paddingLeft="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayoutLoginInfo"
+        >
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:textColorHighlight="@color/white"
+            android:id="@+id/rdnam"
+            android:textColor="@color/white"
+            android:text="Nam"
+            android:buttonTint="@color/white"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/rdnu"
+            android:layout_width="wrap_content"
+            android:text="Nữ"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+        <android.support.v7.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:id="@+id/cardregister"
+            android:layout_below="@+id/radiog"
+            app:cardBackgroundColor="@color/colorAccent"
+            app:cardCornerRadius="25dp"
+            android:layout_centerHorizontal="true"
+            app:cardElevation="10dp"
+            android:layout_marginTop="20dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/txt_register"
+                    android:layout_height="wrap_content"
+                    android:text="Tạo Tài Khoản"
+                    android:textColor="@color/white"
+                    android:layout_centerInParent="true"
+                    android:textSize="18dp"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+
+    <!--REGISTER-->
+</RelativeLayout>

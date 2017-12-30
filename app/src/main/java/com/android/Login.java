@@ -52,7 +52,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private FirebaseAuth.AuthStateListener fireAuthListener;
     EditText edtuser;
     EditText edtpass;
-    TextView txtLogin,txtforget;
+    TextView txtLogin,txtforget,txtdangki;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +60,14 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         edtuser = findViewById(R.id.edtLoginName);
         edtpass=findViewById(R.id.edtPass);
         txtLogin=findViewById(R.id.textViewButtonLogin);
+        txtdangki=findViewById(R.id.txtregister);
+        txtdangki.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this,Register.class);
+                startActivity(intent);
+            }
+        });
         txtforget=findViewById(R.id.textViewForget);
         txtforget.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,10 +198,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             edtpass.setText(null);
                         }
                     }
-                    else {
-                        Toast.makeText(Login.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
 
-                    }
                 }
             }
             @Override
