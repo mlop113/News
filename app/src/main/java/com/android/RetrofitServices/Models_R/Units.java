@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -20,7 +20,7 @@ public class Units implements Serializable
     @SerializedName("temperature")
     @Expose
     private String temperature;
-    private final static long serialVersionUID = -3724372338855477362L;
+    private final static long serialVersionUID = -7579383906210092851L;
 
     /**
      * No args constructor for use in serialization

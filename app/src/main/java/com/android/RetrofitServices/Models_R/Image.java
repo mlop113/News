@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -23,7 +23,7 @@ public class Image implements Serializable
     @SerializedName("url")
     @Expose
     private String url;
-    private final static long serialVersionUID = -1760168898737191315L;
+    private final static long serialVersionUID = -1745839320839700244L;
 
     /**
      * No args constructor for use in serialization

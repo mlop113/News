@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -20,7 +20,7 @@ public class Query implements Serializable
     @SerializedName("results")
     @Expose
     private Results results;
-    private final static long serialVersionUID = 5925216555289428013L;
+    private final static long serialVersionUID = -3838772913703900530L;
 
     /**
      * No args constructor for use in serialization

@@ -1,30 +1,30 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Example implements Serializable
+public class ResponeServices implements Serializable
 {
 
     @SerializedName("query")
     @Expose
     private Query query;
-    private final static long serialVersionUID = -3455534612670973132L;
+    private final static long serialVersionUID = -6207675977218335823L;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public Example() {
+    public ResponeServices() {
     }
 
     /**
      * 
      * @param query
      */
-    public Example(Query query) {
+    public ResponeServices(Query query) {
         super();
         this.query = query;
     }

@@ -1,10 +1,10 @@
-package com.android.RetrofitServices;
+package com.android.RetrofitServices.Models_R;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Ngoc Vu on 12/31/2017.
+ * Created by Ngoc Vu on 1/1/2018.
  */
 
 public class RetrofitClient {

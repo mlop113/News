@@ -21,6 +21,9 @@ import com.android.Interface.IOnClickFilter;
 import com.android.MainActivity;
 import com.android.Models.Post;
 import com.android.R;
+import com.android.RetrofitServices.Models_R.Api_Utils;
+import com.android.RetrofitServices.Models_R.ResponeServices;
+import com.android.RetrofitServices.Models_R.WeaService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,11 +33,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 /**
  * Created by Ngoc Vu on 12/18/2017.
  */
 
 public class Hot_Fragment extends Fragment implements IOnClickFilter {
+    private WeaService weaService;
     //listdata post
     static List<Post> listPost = new ArrayList<>();
     //listdata category
@@ -49,8 +58,6 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
     RecyclerView recyclerViewTag;
     TagAdapter tagAdapter;
     LinearLayoutManager linearLayoutManager;
-
-
     DatabaseReference databaseReference;
     @Nullable
     @Override
@@ -58,7 +65,6 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
         v = inflater.inflate(R.layout.fragment_hot,container,false);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         this.inflater = inflater;
-
         //interface
         MainActivity.iOnClickFilterHot = Hot_Fragment.this;
         MainActivity.iOnClickClearFilterHot = Hot_Fragment.this;
@@ -68,7 +74,6 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
 
         return v;
     }
-
     private void mappings() {
         //sroll to top
         //Tag
@@ -84,6 +89,22 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
         listCategory.addAll(GlobalStaticData.listCategoryHome);
         linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,true);
         linearLayoutManager.setStackFromEnd(true);
+
+       /* weaService= Api_Utils.getSOService();
+        weaService.getAnswers().enqueue(new Callback<ResponeServices>() {
+            @Override
+            public void onResponse(Call<ResponeServices> call, Response<ResponeServices> response) {
+                if (response.isSuccessful())
+                {
+                    tagAdapter = new TagAdapter(getContext(),response.body().getQuery().getResults().getChannel().getItem().getForecast();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponeServices> call, Throwable t) {
+
+            }
+        });*/
         tagAdapter = new TagAdapter(getContext(),GlobalStaticData.listTag);
         recyclerViewTag.setLayoutManager(linearLayoutManager);
         recyclerViewTag.setAdapter(tagAdapter);

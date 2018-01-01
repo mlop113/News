@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -17,7 +17,7 @@ public class Wind implements Serializable
     @SerializedName("speed")
     @Expose
     private String speed;
-    private final static long serialVersionUID = -8074520982417161529L;
+    private final static long serialVersionUID = 8846580599563462823L;
 
     /**
      * No args constructor for use in serialization

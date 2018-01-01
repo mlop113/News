@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -17,7 +17,7 @@ public class Location implements Serializable
     @SerializedName("region")
     @Expose
     private String region;
-    private final static long serialVersionUID = -1002654759433662091L;
+    private final static long serialVersionUID = -8396998552564341748L;
 
     /**
      * No args constructor for use in serialization

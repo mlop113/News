@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -47,7 +47,7 @@ public class Channel implements Serializable
     @SerializedName("item")
     @Expose
     private Item item;
-    private final static long serialVersionUID = 8418242589810015488L;
+    private final static long serialVersionUID = 3955496813325264910L;
 
     /**
      * No args constructor for use in serialization

@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import com.android.Global.AppConfig;
 import com.android.Models.UserMember;
+import com.android.RetrofitServices.Models_R.Api_Utils;
+import com.android.RetrofitServices.Models_R.ResponeServices;
+import com.android.RetrofitServices.Models_R.WeaService;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,6 +41,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.android.RetrofitServices.Models_R.ResponeServices;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ngoc Vu on 12/18/2017.
@@ -46,21 +55,27 @@ import com.google.firebase.database.ValueEventListener;
 public class Login extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
     DatabaseReference databaseReference;
     private GoogleApiClient googleApiClient;
+    private WeaService weaService;
     private SignInButton signInButton;
     public static final int SIGN_IN_CODE = 777;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener fireAuthListener;
     EditText edtuser;
     EditText edtpass;
-    TextView txtLogin,txtforget,txtdangki;
+    TextView txtLogin,txtforget,txtdangki,txtloca,txttemp;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         edtuser = findViewById(R.id.edtLoginName);
         edtpass=findViewById(R.id.edtPass);
+        txtloca=findViewById(R.id.txtlocation);
+        txttemp=findViewById(R.id.txttemp);
         txtLogin=findViewById(R.id.textViewButtonLogin);
         txtdangki=findViewById(R.id.txtregister);
+        weaService=Api_Utils.getWeaservice();
+        loadRespone();
         txtdangki.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +127,27 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             }
         };
 
+    }
+    private void loadRespone()
+    {
+        weaService.getAnswers().enqueue(new Callback<ResponeServices>() {
+            @Override
+            public void onResponse(Call<ResponeServices> call, Response<ResponeServices> response) {
+                if (response.isSuccessful())
+                {
+                    txtloca.setText(response.body().getQuery().getResults().getChannel().getTitle());
+                    String t=response.body().getQuery().getResults().getChannel().getItem().getCondition().getTemp();
+                    int k=Integer.parseInt(t);
+                    int temp=(k-32)*5/9;
+                    txttemp.setText(String.valueOf(temp)+"°C "+ response.body().getQuery().getResults().getChannel().getItem().getCondition().getText());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponeServices> call, Throwable t) {
+
+            }
+        });
     }
     protected void setButtonText (SignInButton googleSinOutButton, String buttonText) {
         for (int i = 0; i < signInButton.getChildCount (); i++) {

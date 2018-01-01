@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -14,7 +14,7 @@ public class Astronomy implements Serializable
     @SerializedName("sunset")
     @Expose
     private String sunset;
-    private final static long serialVersionUID = 6034636355229198459L;
+    private final static long serialVersionUID = 6961631676899541582L;
 
     /**
      * No args constructor for use in serialization

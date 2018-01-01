@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -26,7 +26,7 @@ public class Forecast implements Serializable
     @SerializedName("text")
     @Expose
     private String text;
-    private final static long serialVersionUID = 1930728467843819149L;
+    private final static long serialVersionUID = 2525233153827530493L;
 
     /**
      * No args constructor for use in serialization

@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +36,7 @@ public class Item implements Serializable
     @SerializedName("guid")
     @Expose
     private Guid guid;
-    private final static long serialVersionUID = -6430465770196673287L;
+    private final static long serialVersionUID = -1720691117307498453L;
 
     /**
      * No args constructor for use in serialization

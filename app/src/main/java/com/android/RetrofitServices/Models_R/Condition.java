@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -20,7 +20,7 @@ public class Condition implements Serializable
     @SerializedName("text")
     @Expose
     private String text;
-    private final static long serialVersionUID = -1803249944519297982L;
+    private final static long serialVersionUID = 3405775571860701758L;
 
     /**
      * No args constructor for use in serialization

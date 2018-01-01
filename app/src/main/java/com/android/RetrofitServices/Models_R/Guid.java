@@ -1,5 +1,5 @@
 
-package com.android.RetrofitServices.Model_R;
+package com.android.RetrofitServices.Models_R;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -11,7 +11,7 @@ public class Guid implements Serializable
     @SerializedName("isPermaLink")
     @Expose
     private String isPermaLink;
-    private final static long serialVersionUID = -1683193387136269116L;
+    private final static long serialVersionUID = -5011125958998226481L;
 
     /**
      * No args constructor for use in serialization
