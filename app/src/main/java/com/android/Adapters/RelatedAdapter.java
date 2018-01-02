@@ -50,7 +50,11 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.ViewHold
                 context.startActivity(intent);
             }
         });
-        Glide.with(context).load(postModel.getImg()).into(holder.imageViewCover);
+        try{
+            Glide.with(context).load(postModel.getImg()).into(holder.imageViewCover);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
     }
 
 

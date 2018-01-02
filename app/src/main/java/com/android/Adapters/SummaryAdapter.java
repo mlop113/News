@@ -165,7 +165,11 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 final Post postHeader = listPost.get(position);
                 final HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-                Glide.with(context).load(postHeader.getImg()).into(headerViewHolder.imageViewCover);
+                try{
+                    Glide.with(context).load(postHeader.getImg()).into(headerViewHolder.imageViewCover);
+                }catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                }
                 headerViewHolder.textViewTitile.setText(postHeader.getTitle());
                 Blur blur = new Blur(context);
                 blur.applyBlur(headerViewHolder.imageViewCover, headerViewHolder.textViewTitile);
@@ -224,7 +228,11 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         final Post post = dataSnapshot.getValue(Post.class);
                         final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                         //imageCover
-                        Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
+                        try{
+                            Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
+                        }catch (IllegalArgumentException e){
+                            e.printStackTrace();
+                        }
                         itemViewHolder.textViewTitile.setText(post.getTitle());
 
                         itemViewHolder.textViewCategory.setText(post.getcategory());
@@ -320,7 +328,11 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         if (listPostOfCategory != null && listPostOfCategory.size() > 0) {
                             final Post post1 = listPostOfCategory.get(0);
                             categoryViewHolder.linearLayoutPost1.setVisibility(View.VISIBLE);
-                            Glide.with(context).load(post1.getImg()).into(categoryViewHolder.imageViewPost1);
+                            try{
+                                Glide.with(context).load(post1.getImg()).into(categoryViewHolder.imageViewPost1);
+                            }catch (IllegalArgumentException e){
+                                e.printStackTrace();
+                            }
                             categoryViewHolder.textViewTitlePost1.setText(post1.getTitle());
                             categoryViewHolder.linearLayoutPost1.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -331,7 +343,11 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (listPostOfCategory.size() > 1) {
                                 final Post post2 = listPostOfCategory.get(1);
                                 categoryViewHolder.linearLayoutPost2.setVisibility(View.VISIBLE);
-                                Glide.with(context).load(post2.getImg()).into(categoryViewHolder.imageViewPost2);
+                                try{
+                                    Glide.with(context).load(post2.getImg()).into(categoryViewHolder.imageViewPost2);
+                                }catch (IllegalArgumentException e){
+                                    e.printStackTrace();
+                                }
                                 categoryViewHolder.textViewDescriptionPost2.setText(post2.getDescription());
                                 categoryViewHolder.linearLayoutPost2.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -343,7 +359,11 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (listPostOfCategory.size() > 2) {
                                 final Post post3 = listPostOfCategory.get(2);
                                 categoryViewHolder.linearLayoutPost3.setVisibility(View.VISIBLE);
-                                Glide.with(context).load(post3.getImg()).into(categoryViewHolder.imageViewPost3);
+                                try{
+                                    Glide.with(context).load(post3.getImg()).into(categoryViewHolder.imageViewPost3);
+                                }catch (IllegalArgumentException e){
+                                    e.printStackTrace();
+                                }
                                 categoryViewHolder.textViewDescriptionPost3.setText(post3.getDescription());
                                 categoryViewHolder.linearLayoutPost3.setOnClickListener(new View.OnClickListener() {
                                     @Override

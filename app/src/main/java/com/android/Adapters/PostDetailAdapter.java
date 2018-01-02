@@ -80,7 +80,11 @@ public class PostDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         switch (holder.getItemViewType()){
             case ITEMVIEWTYPE_CONTENT:
                 final ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
-                Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
+                try{
+                    Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
+                }catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                }
                 contentViewHolder.textViewTitile.setText(post.getTitle());
                 contentViewHolder.textViewCategory.setText(post.getcategory());
                 contentViewHolder.textViewDescription.setText(post.getDescription());

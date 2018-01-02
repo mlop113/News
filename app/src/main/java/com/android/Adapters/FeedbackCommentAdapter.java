@@ -84,7 +84,11 @@ public class FeedbackCommentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         UserMember userMember = dataSnapshot.getValue(UserMember.class);
                         commentViewholder.textViewUsername.setText(userMember.getName());
-                        Glide.with(context).load(userMember.getImg()).into(commentViewholder.imageViewUserComment);
+                        try{
+                            Glide.with(context).load(userMember.getImg()).into(commentViewholder.imageViewUserComment);
+                        }catch (IllegalArgumentException e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
@@ -129,7 +133,11 @@ public class FeedbackCommentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         UserMember userMember = dataSnapshot.getValue(UserMember.class);
                         feedbackViewholer.textViewFeedbackUsername.setText(userMember.getName());
-                        Glide.with(context).load(userMember.getImg()).into(feedbackViewholer.imageViewUserReply);
+                        try{
+                            Glide.with(context).load(userMember.getImg()).into(feedbackViewholer.imageViewUserReply);
+                        }catch (IllegalArgumentException e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override

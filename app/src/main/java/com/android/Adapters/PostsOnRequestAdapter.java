@@ -67,7 +67,11 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         final Post post = listPost.get(position);
         final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         //imageCover
-        Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
+        try{
+            Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
         itemViewHolder.textViewTitile.setText(post.getTitle());
 
         itemViewHolder.textViewCategory.setText(post.getcategory());
