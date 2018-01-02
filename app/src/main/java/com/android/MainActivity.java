@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     private RecyclerView recyclerViewCategory;
     RelativeLayout relativeLayoutUser;
     ImageView imageViewUserAction;
+    RelativeLayout relativeLayoutUserAction;
     List<String> listCategory = new ArrayList<>();
     CategoryAdapter categoryAdapter;
     ClearableEditText editTextSearch;
@@ -160,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         //header contean Layoutuser
         relativeLayoutUser = (RelativeLayout) findViewById(R.id.relativeLayoutUser);
         imageViewUserAction = findViewById(R.id.imageViewUserAction);
+        relativeLayoutUserAction = findViewById(R.id.relativeLayoutUserAction);
         editTextSearch = (ClearableEditText) findViewById(R.id.editTextSearch);
         //listCategory
         recyclerViewCategory= (RecyclerView) findViewById(R.id.recyclerViewCategory);
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
 
     private void event() {
         relativeLayoutUser.setOnClickListener(this);
-        imageViewUserAction.setOnClickListener(this);
+        relativeLayoutUserAction.setOnClickListener(this);
         editTextSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -585,7 +587,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
                 }
 
                 break;
-            case R.id.imageViewUserAction:
+            case R.id.relativeLayoutUserAction:
                 if(appPreferences.isLogin()){
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

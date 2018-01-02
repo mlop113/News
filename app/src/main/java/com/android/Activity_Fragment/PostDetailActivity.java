@@ -185,6 +185,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 Toast.makeText(PostDetailActivity.this, "sent", Toast.LENGTH_SHORT).show();
                                 editTextComment.clearFocus();
                                 editTextComment.setText("");
+                                inputMethodManager.hideSoftInputFromWindow(editTextComment.getWindowToken(), 0);
+                                imageViewSend.startAnimation(animshake);
+                                recyclerViewPostDetail.smoothScrollToPosition(View.FOCUS_DOWN);
                             }
                         });
 

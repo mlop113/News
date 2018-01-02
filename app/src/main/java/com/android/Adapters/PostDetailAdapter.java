@@ -91,7 +91,11 @@ public class PostDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         post = dataSnapshot.getValue(Post.class);
-                        Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
+                        try {
+                            Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
+                        }catch (IllegalArgumentException e){
+                            e.printStackTrace();
+                        }
                         contentViewHolder.textViewTitile.setText(post.getTitle());
                         contentViewHolder.textViewCategory.setText(post.getcategory());
                         contentViewHolder.textViewDescription.setText(post.getDescription());
