@@ -3,6 +3,7 @@ package com.android;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -32,8 +33,10 @@ import com.aigestudio.wheelpicker.widgets.WheelYearPicker;
 import com.android.Activity_Fragment.Hot_Fragment;
 import com.android.Activity_Fragment.New_Fragment;
 import com.android.Activity_Fragment.PostsOnRequestActivity;
+import com.android.Activity_Fragment.Profile_Activity;
 import com.android.Adapters.CategoryAdapter;
 import com.android.Adapters.MyFragmentPagerAdapter;
+import com.android.Effect.Session;
 import com.android.Global.AppConfig;
 import com.android.Global.GlobalFunction;
 import com.android.Global.GlobalStaticData;
@@ -63,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     //actionbar
     ImageButton imageButtonPlus;
     DrawerLayout drawer;
-
     //dialogFilter
     Dialog dialogFilter;
 
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     TabHost tabHost;
 
     ViewPager viewPager;
-
+    Session session;
     //WheelDPicker
     WheelDayPicker wheelDayPicker;
     WheelMonthPicker wheelMonthPicker;
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     public static IOnClickFilter iOnClickClearFilterNew;
     boolean isFilterHot=false;
     boolean isFilterNew=false;
-
+    private String  p,u,i;
     DatabaseReference databaseReference;
 
     //intent
@@ -118,8 +120,35 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+        Bundle bundle=getIntent().getExtras();
+        session=new Session(this);
+         p=bundle.getString("username");
+         u=bundle.getString("userid");
 
 
+         if (u!=null)
+         {
+             SharedPreferences preferences= getSharedPreferences(u,MODE_PRIVATE);
+             SharedPreferences.Editor e = preferences.edit();
+             e.putString("userid2",u);// add or overwrite someValue
+             e.commit();
+             i = preferences.getString("userid2", null);
+             textViewUsername.setText(p);
+         }else {
+             u=i;
+             textViewUsername.setText(p);
+         }
+
+        textViewUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this, Profile_Activity.class);
+                intent.putExtra("userid",u);
+                intent.putExtra("userid2",i);
+                startActivity(intent);
+            }
+        });
         //drawer contain layoutuser and listCategory
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -299,10 +328,11 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
             UserMember user = (UserMember) data.getSerializableExtra(AppConfig.USER);
             ImageView imageViewNotLogin = (ImageView) findViewById(R.id.imageViewNotLogin);
             SelectableRoundedImageView selectableRIVAvatar = (SelectableRoundedImageView) findViewById(R.id.selectableRIVAvatar);
-            TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
-            imageViewNotLogin.setVisibility(View.GONE);
+       //     TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+ //           imageViewNotLogin.setVisibility(View.GONE);
+
             selectableRIVAvatar.setVisibility(View.VISIBLE);
-            textViewUsername.setText(user.getName());
+      //      textViewUsername.setText(p);
             Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
         }
     }

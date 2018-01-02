@@ -77,21 +77,23 @@ public class Register extends AppCompatActivity {
     }
     private void CreateUser(final  String address,final String dateCreate, final String email,final String img,final String loginName,final String name,final String password,final String phone,final String sex)
     {
-        databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference mdata=FirebaseDatabase.getInstance().getReference();
+        mdata.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot datauser : dataSnapshot.getChildren())
                 {
-                    if((!datauser.getValue(UserMember.class).getLoginName().contentEquals(loginName))&&password!=null) {
-                        writeNewUser(address, dateCreate, email, "https://www.facebook.com/photo.php?fbid=1928810227435906&set=pcb.1928813470768915&type=3", loginName, name, password, phone, sex, datauser.getKey().toString());
-                        Toast.makeText(Register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                        Intent intentSearch = new Intent(Register.this, Login.class);
-                        startActivity(intentSearch);
-                    }
+                    if((datauser.getValue(UserMember.class).getLoginName().contentEquals(loginName)))
+                    {
+                        Toast.makeText(Register.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
 
-                    else
-                        {
-                            Toast.makeText(Register.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
+                    } else {
+                            writeNewUser(address, dateCreate, email, "https://www.facebook.com/photo.php?fbid=1928810227435906&set=pcb.1928813470768915&type=3", loginName, name, password, phone, sex, datauser.getKey().toString());
+                             Toast.makeText(Register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+                            Intent intentSearch = new Intent(Register.this, Login.class);
+                            startActivity(intentSearch);
+                                break;
+
                         }
 
 
@@ -113,6 +115,7 @@ public class Register extends AppCompatActivity {
     private void writeNewUser(final  String address,final String dateCreate, final String email,final String img,final String loginName,final String name,final String password,final String phone,final String sex,final String userid) {
         UserMember user = new UserMember(address, dateCreate,email,img,loginName,name,password,phone,sex,userid);
         databaseReference.child("UserMembers").push().setValue(user);
+        finish();
     //    CreateUser(address, dateCreate,email,img,loginName,name,password,phone,sex);
     }
 }

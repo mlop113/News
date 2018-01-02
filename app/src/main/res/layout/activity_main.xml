@@ -74,13 +74,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:layout_marginLeft="10dp"
                             android:text="@string/login"
                             android:textColor="@color/textViewLogin_while"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:id="@+id/ln_expandright"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -92,11 +93,13 @@
                         <ImageView
                             android:layout_width="15dp"
                             android:layout_height="15dp"
+                            android:id="@+id/ic_profile"
+                            android:layout_toEndOf="@+id/textViewName"
                             android:contentDescription="@string/ic_search"
                             android:src="@drawable/ic_expand_right"
                             android:tint="@color/expand_while" />
 
-                    </LinearLayout>
+                    </RelativeLayout>
 
 
                 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.android;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.Effect.Session;
 import com.android.Global.AppConfig;
 import com.android.Models.UserMember;
 import com.android.RetrofitServices.Models_R.Api_Utils;
@@ -55,6 +57,7 @@ import retrofit2.Response;
 public class Login extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
     DatabaseReference databaseReference;
     private GoogleApiClient googleApiClient;
+    private Session session;
     private WeaService weaService;
     private SignInButton signInButton;
     public static final int SIGN_IN_CODE = 777;
@@ -62,12 +65,18 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private FirebaseAuth.AuthStateListener fireAuthListener;
     EditText edtuser;
     EditText edtpass;
+    private String n;
     TextView txtLogin,txtforget,txtdangki,txtloca,txttemp;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        session =new Session(this);
+        if (session.loggedin())
+        {
+            startActivity(new Intent(Login.this,MainActivity.class));
+            finish();
+        }
         edtuser = findViewById(R.id.edtLoginName);
         edtpass=findViewById(R.id.edtPass);
         txtloca=findViewById(R.id.txtlocation);
@@ -225,8 +234,18 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     {
                         if(dataPost.getValue(UserMember.class).getPassword().contentEquals(password))
                         {
-                            Intent intentSearch = new Intent(Login.this,MainActivity.class);
-                            startActivity(intentSearch);
+
+                            String p = String.valueOf(dataPost.getValue(UserMember.class).getName());
+                             String u= String.valueOf(dataPost.getValue(UserMember.class).getUserId());
+                            session.setLoginin(true);
+
+
+                            Intent intent = new Intent(Login.this,MainActivity.class);
+
+                            intent.putExtra("username",p);
+                            intent.putExtra("userid",u);
+
+                            startActivity(intent);
                         }
                         else
                         {
