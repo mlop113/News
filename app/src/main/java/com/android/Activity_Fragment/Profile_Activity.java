@@ -1,19 +1,21 @@
 package com.android.Activity_Fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.Effect.Session;
-import com.android.ForgetPassword;
 import com.android.Global.AppConfig;
-import com.android.Login;
+import com.android.Global.AppPreferences;
 import com.android.Models.UserMember;
 import com.android.R;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,15 +27,16 @@ import com.google.firebase.database.ValueEventListener;
  */
 
 public class Profile_Activity extends AppCompatActivity {
+    AppPreferences appPreferences;
     TextView txt_Logout,txtname,txtaddress,txtphone,txtgioitinh;
+    ImageView user_profile_photo;
     private DatabaseReference mdata;
-    Session session;
     private String u;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile_user);
-        session=new Session(this);
+        appPreferences = AppPreferences.getInstance(this);
         Bundle bundle=getIntent().getExtras();
         u=bundle.getString("userid");
         mdata= FirebaseDatabase.getInstance().getReference();
@@ -45,7 +48,34 @@ public class Profile_Activity extends AppCompatActivity {
         txt_Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    loggout();
+                AlertDialog.Builder builder;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder = new AlertDialog.Builder(Profile_Activity.this, android.R.style.Theme_Material_Dialog_Alert);
+                } else {
+                    builder = new AlertDialog.Builder(Profile_Activity.this);
+                }
+                builder.setTitle("Đăng xuất")
+                        .setMessage("Bạn có chắc muốn đăng xuất tài khoản?")
+                        .setPositiveButton("Đăng xuất", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                                logout();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
+        user_profile_photo = findViewById(R.id.user_profile_photo);
+        user_profile_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
         if (u==null)
@@ -55,29 +85,36 @@ public class Profile_Activity extends AppCompatActivity {
             Profile(u);
         }
     }
-    private void loggout()
+    private void logout()
     {
-        session.setLoginin(false);
+        appPreferences.setLogin(false);
+        Intent intent = new Intent();
+        setResult(AppConfig.RESULT_CODE_LOGOUT,intent);
         finish();
-        startActivity(new Intent(Profile_Activity.this, Login.class));
     }
     private void Profile(final String Userid) {
-        mdata.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
+        mdata.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).child(Userid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot dataPost : dataSnapshot.getChildren())
-                {
-                    if(dataPost.getValue(UserMember.class).getUserId().contentEquals(Userid)) {
-                                String n = String.valueOf(dataPost.getValue(UserMember.class).getName());
+                UserMember user = dataSnapshot.getValue(UserMember.class);
+                                String n = String.valueOf(user.getName());
                                 txtname.setText(n);
-                                String a = String.valueOf(dataPost.getValue(UserMember.class).getAddress());
+                                String a = String.valueOf(user.getAddress());
                                 txtaddress.setText(a);
-                                String p = String.valueOf(dataPost.getValue(UserMember.class).getPhone());
+                                String p = String.valueOf(user.getPhone());
                                 txtphone.setText(p);
-                                String g=String.valueOf(dataPost.getValue(UserMember.class).getSex());
+                                String g=String.valueOf(user.getSex());
                                 txtgioitinh.setText(g);
-                    }
-                }
+                //Glide.with(Profile_Activity.this).load(user.getImg()).into(user_profile_photo);
+                /*if(android.os.Build.VERSION.SDK_INT >= 21){
+                    user_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.bg_login, getTheme()));
+                } else {
+                    user_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.bg_login));
+                }*/
+                Glide
+                        .with(Profile_Activity.this)
+                        .load(user.getImg())
+                        .into(user_profile_photo);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

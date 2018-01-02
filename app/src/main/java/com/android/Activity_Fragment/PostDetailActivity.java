@@ -19,8 +19,9 @@ import android.widget.Toast;
 import com.android.Adapters.PostDetailAdapter;
 import com.android.CustomView.CustomSnackbar;
 import com.android.Global.AppConfig;
+import com.android.Global.AppPreferences;
 import com.android.Global.GlobalFunction;
-import com.android.Global.GlobalStaticData;
+import com.android.Login;
 import com.android.Models.Comment;
 import com.android.Models.Post;
 import com.android.Models.ReplyComment;
@@ -46,6 +47,7 @@ import dmax.dialog.SpotsDialog;
  */
 
 public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener{
+    AppPreferences appPreferences;
     InputMethodManager inputMethodManager;
     //animation
     Animation animlike;
@@ -75,7 +77,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
-
+        appPreferences = AppPreferences.getInstance(this);
         //connect firebase
         //fireBase();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -169,22 +171,28 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 onClickLikePost(imageViewLike);
                 break;
             case R.id.linearLayoutSend:
-                Date myDate = new Date();
-                if(!TextUtils.isEmpty(editTextComment.getText().toString().trim())) {
-                    Comment comment = new Comment("312321", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(myDate),
-                            editTextComment.getText().toString(),new HashMap<String,ReplyComment>(),
-                            new ArrayList<String>(), GlobalStaticData.currentUser.getUserId());
-                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_COMMENTS)
-                            .push().setValue(comment, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            databaseReference.child("commentId").setValue(databaseReference.getKey());
-                            Toast.makeText(PostDetailActivity.this, "sent", Toast.LENGTH_SHORT).show();
-                            editTextComment.clearFocus();
-                            editTextComment.setText("");
-                        }
-                    });
+                if(appPreferences.isLogin()) {
+                    Date myDate = new Date();
+                    if (!TextUtils.isEmpty(editTextComment.getText().toString().trim())) {
+                        Comment comment = new Comment("312321", new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(myDate),
+                                editTextComment.getText().toString(), new HashMap<String, ReplyComment>(),
+                                new ArrayList<String>(), appPreferences.getUserId());
+                        databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_COMMENTS)
+                                .push().setValue(comment, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                databaseReference.child("commentId").setValue(databaseReference.getKey());
+                                Toast.makeText(PostDetailActivity.this, "sent", Toast.LENGTH_SHORT).show();
+                                editTextComment.clearFocus();
+                                editTextComment.setText("");
+                            }
+                        });
 
+                    }
+                }
+                else{
+                    Intent intentLogin = new Intent(this,Login.class);
+                    startActivityForResult(intentLogin,AppConfig.REQUEST_CODE_LOGIN);
                 }
                 break;
         }
@@ -195,7 +203,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userId = GlobalStaticData.currentUser.getUserId();
+                String userId = appPreferences.getUserId();
                 post = dataSnapshot.getValue(Post.class);
                 if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
                     if (post.getUserLikeIds().contains(userId)) {
@@ -217,53 +225,74 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void onClickLikePost( final ImageView imageViewLike) {
-        //get from user_post
-        if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
-            String userId = GlobalStaticData.currentUser.getUserId();
-            //if user liked this post
-            if (post.getUserLikeIds().contains(userId)) {
-                int index = post.getUserLikeIds().indexOf(userId);
-                databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child(String.valueOf(index)).removeValue();
+        if(appPreferences.isLogin()) {
+            //get from user_post
+            if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
+                String userId = appPreferences.getUserId();
+                //if user liked this post
+                if (post.getUserLikeIds().contains(userId)) {
+                    int index = post.getUserLikeIds().indexOf(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child(String.valueOf(index)).removeValue();
+                } else {
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child(String.valueOf(post.getUserLikeIds().size())).setValue(String.valueOf(userId));
+                    imageViewLike.startAnimation(animlike);
+                }
             } else {
+                String userId = appPreferences.getUserId();
                 databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child(String.valueOf(post.getUserLikeIds().size())).setValue(String.valueOf(userId));
+                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId));
                 imageViewLike.startAnimation(animlike);
             }
-        } else {
-            String userId = GlobalStaticData.currentUser.getUserId();
-            databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                    .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId));
-            imageViewLike.startAnimation(animlike);
+        }
+        else {
+            Intent intentLogin = new Intent(this,Login.class);
+            startActivityForResult(intentLogin,AppConfig.REQUEST_CODE_LOGIN);
         }
     }
 
     private void onClickBookMark(){
-        progressDialog.show();
-        databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(GlobalStaticData.currentUser.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final List<String> listBookmark = new ArrayList<String>();
-                //have not been save bookmark
-                if(dataSnapshot.getValue()!=null)
-                {
-                    for (DataSnapshot dataBookmark : dataSnapshot.getChildren()) {
-                        listBookmark.add(dataBookmark.getValue().toString());
-                    }
-                    if(listBookmark.contains(post.getPostId()))
-                    {
-                        listBookmark.remove(post.getPostId());
-                        databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(GlobalStaticData.currentUser.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(PostDetailActivity.this, getString(R.string.removebookmark), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    else
-                    {
+        if(appPreferences.isLogin()) {
+            progressDialog.show();
+            databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(appPreferences.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final List<String> listBookmark = new ArrayList<String>();
+                    //have not been save bookmark
+                    if (dataSnapshot.getValue() != null) {
+                        for (DataSnapshot dataBookmark : dataSnapshot.getChildren()) {
+                            listBookmark.add(dataBookmark.getValue().toString());
+                        }
+                        if (listBookmark.contains(post.getPostId())) {
+                            listBookmark.remove(post.getPostId());
+                            databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(appPreferences.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(PostDetailActivity.this, getString(R.string.removebookmark), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            listBookmark.add(post.getPostId());
+                            databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(appPreferences.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    CustomSnackbar customSnackbar = CustomSnackbar.make(linearLayoutBookmark, 1);
+                                    customSnackbar.setDuration(CustomSnackbar.LENGTH_LONG);
+                                    customSnackbar.setText(getString(R.string.savebookmark));
+                                    customSnackbar.setAction("Xem " + getString(R.string.action_bookmarks), new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            GlobalFunction.onClickViewBookMark(PostDetailActivity.this, progressDialog);
+                                        }
+                                    });
+                                    customSnackbar.show();
+                                }
+                            });
+                        }
+                    } else {
                         listBookmark.add(post.getPostId());
-                        databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(GlobalStaticData.currentUser.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(appPreferences.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 CustomSnackbar customSnackbar = CustomSnackbar.make(linearLayoutBookmark, 1);
@@ -272,59 +301,44 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 customSnackbar.setAction("Xem " + getString(R.string.action_bookmarks), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        GlobalFunction.onClickViewBookMark(PostDetailActivity.this,progressDialog);
+                                        GlobalFunction.onClickViewBookMark(PostDetailActivity.this, progressDialog);
                                     }
                                 });
                                 customSnackbar.show();
                             }
                         });
                     }
-                }
-                else
-                {
-                    listBookmark.add(post.getPostId());
-                    databaseReference.child(AppConfig.FIREBASE_FIELD_BOOKMARKS).child(GlobalStaticData.currentUser.getUserId()).setValue(listBookmark).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            CustomSnackbar customSnackbar = CustomSnackbar.make(linearLayoutBookmark, 1);
-                            customSnackbar.setDuration(CustomSnackbar.LENGTH_LONG);
-                            customSnackbar.setText(getString(R.string.savebookmark));
-                            customSnackbar.setAction("Xem " + getString(R.string.action_bookmarks), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    GlobalFunction.onClickViewBookMark(PostDetailActivity.this,progressDialog);
+                    if (BookMarkActivity.listPost != null) {
+                        databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                BookMarkActivity.listPost = new ArrayList<Post>();
+                                for (String pId : listBookmark) {
+                                    BookMarkActivity.listPost.add(dataSnapshot.child(pId).getValue(Post.class));
                                 }
-                            });
-                            customSnackbar.show();
-                        }
-                    });
-                }
-                if(BookMarkActivity.listPost!=null) {
-                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            BookMarkActivity.listPost = new ArrayList<Post>();
-                            for (String pId : listBookmark) {
-                                BookMarkActivity.listPost.add(dataSnapshot.child(pId).getValue(Post.class));
+                                if (BookMarkActivity.postsOnRequestAdapter != null)
+                                    BookMarkActivity.postsOnRequestAdapter.setData(BookMarkActivity.listPost);
                             }
-                            if(BookMarkActivity.postsOnRequestAdapter!=null)
-                                BookMarkActivity.postsOnRequestAdapter.setData(BookMarkActivity.listPost);
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
+                            }
+                        });
+                    }
+                    progressDialog.dismiss();
                 }
-                progressDialog.dismiss();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
+        else{
+            Intent intentLogin = new Intent(this,Login.class);
+            startActivityForResult(intentLogin,AppConfig.REQUEST_CODE_LOGIN);
+        }
     }
 
 
@@ -339,7 +353,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onStart() {
         super.onStart();
         checkAction();
-
+        postDetailAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -355,4 +369,19 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     protected void overridePendingTransitionExit() {
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data==null) {
+            return;
+        }
+
+        if(requestCode==AppConfig.REQUEST_CODE_LOGIN && resultCode==AppConfig.RESULT_CODE_LOGIN)
+        {
+            postDetailAdapter.notifyDataSetChanged();
+        }
+    }
+
+
 }

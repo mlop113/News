@@ -16,10 +16,12 @@ import android.widget.TextView;
 
 import com.android.Activity_Fragment.PostDetailActivity;
 import com.android.Global.AppConfig;
+import com.android.Global.AppPreferences;
 import com.android.Global.GlobalFunction;
-import com.android.Global.GlobalStaticData;
+import com.android.Login;
 import com.android.Models.Post;
 import com.android.R;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +43,7 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     List<Post> listPost = new ArrayList<>();
     Animation hyperspaceJumpAnimation;
     DatabaseReference databaseReference;
-
+    AppPreferences appPreferences;
     public PostsOnRequestAdapter(Context context, List<Post> listPost) {
         this.context = context;
         this.listPost = listPost;
@@ -49,6 +51,7 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         animation180to0 = AnimationUtils.loadAnimation(context, R.anim.rotate_iconexpand_180to0);
         hyperspaceJumpAnimation = AnimationUtils.loadAnimation(context, R.anim.animlike);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        appPreferences = AppPreferences.getInstance(context);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         final Post post = listPost.get(position);
         final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         //imageCover
-        itemViewHolder.imageViewCover.setImageResource(R.drawable.bogiaothong);
+        Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
         itemViewHolder.textViewTitile.setText(post.getTitle());
 
         itemViewHolder.textViewCategory.setText(post.getcategory());
@@ -132,7 +135,7 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userId = GlobalStaticData.currentUser.getUserId();
+                String userId = appPreferences.getUserId();
                 long count  = dataSnapshot.child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).getChildrenCount();
                 if(post.getUserLikeIds()!=null && count>0) {
                     if (post.getUserLikeIds().contains(userId)) {
@@ -156,29 +159,35 @@ public class PostsOnRequestAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     private void onClickLikePost(final Post post, final ImageView imageViewLike){
-        //get from user_post
-        String userId = GlobalStaticData.currentUser.getUserId();
-        if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
-            //if user liked this post
-            if (post.getUserLikeIds().contains(userId)) {
-                post.getUserLikeIds().remove(userId);
-                databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+        if(appPreferences.isLogin()) {
+            //get from user_post
+            String userId = appPreferences.getUserId();
+            if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
+                //if user liked this post
+                if (post.getUserLikeIds().contains(userId)) {
+                    post.getUserLikeIds().remove(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                } else {
+                    post.getUserLikeIds().add(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                }
             } else {
+                post.setUserLikeIds(new ArrayList<String>());
                 post.getUserLikeIds().add(userId);
                 databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        imageViewLike.startAnimation(hyperspaceJumpAnimation);
+                    }
+                });
             }
-        } else {
-            post.setUserLikeIds(new ArrayList<String>());
-            post.getUserLikeIds().add(userId);
-            databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                    .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    imageViewLike.startAnimation(hyperspaceJumpAnimation);
-                }
-            });
+        }
+        else{
+            Intent intentLogin = new Intent(context,Login.class);
+            context.startActivity(intentLogin);
         }
 
     }

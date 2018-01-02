@@ -8,8 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 import com.android.Adapters.SummaryAdapter;
@@ -21,8 +19,6 @@ import com.android.Interface.IOnClickFilter;
 import com.android.MainActivity;
 import com.android.Models.Post;
 import com.android.R;
-import com.android.RetrofitServices.Models_R.Api_Utils;
-import com.android.RetrofitServices.Models_R.ResponeServices;
 import com.android.RetrofitServices.Models_R.WeaService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,10 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -50,7 +42,7 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
     List<String> listCategory = new ArrayList<>();
     //RecyclerView summary
     public static RecyclerView recyclerViewSummary;
-    SummaryAdapter summary_adapter;
+    public static SummaryAdapter summary_adapter;
     LayoutInflater inflater;
     View v;
     //tag
@@ -70,7 +62,7 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
         MainActivity.iOnClickClearFilterHot = Hot_Fragment.this;
         mappings();
         initView();
-        event();
+
 
         return v;
     }
@@ -161,30 +153,7 @@ public class Hot_Fragment extends Fragment implements IOnClickFilter {
     }
 
 
-    private void event() {
-        recyclerViewSummary.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            boolean hideTag = false;
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (hideTag) {
-                    linearLayoutTag.animate().translationY(-linearLayoutTag.getHeight()).setInterpolator(new AccelerateInterpolator()).start();
-                } else {
-                    linearLayoutTag.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                }
-            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 20) {
-                    hideTag = true;
-                } else if (dy < -5) {
-                    hideTag = false;
-                }
-            }
-        });
-    }
 
     @Override
     public void onClickFilter(final String date) {

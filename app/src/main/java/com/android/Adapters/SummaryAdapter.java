@@ -18,10 +18,12 @@ import com.android.Activity_Fragment.PostDetailActivity;
 import com.android.Activity_Fragment.PostsOnRequestActivity;
 import com.android.Effect.Blur;
 import com.android.Global.AppConfig;
+import com.android.Global.AppPreferences;
 import com.android.Global.GlobalFunction;
-import com.android.Global.GlobalStaticData;
+import com.android.Login;
 import com.android.Models.Post;
 import com.android.R;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,7 +50,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     List<String> listCategory = new ArrayList<>();
     Animation hyperspaceJumpAnimation;
     DatabaseReference databaseReference;
-
+    AppPreferences appPreferences;
     public SummaryAdapter(Context context, List<Post> listPost, List<String> listCategory) {
         this.context = context;
         this.listPost = listPost;
@@ -57,6 +59,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         animation180to0 = AnimationUtils.loadAnimation(context, R.anim.rotate_iconexpand_180to0);
         hyperspaceJumpAnimation = AnimationUtils.loadAnimation(context, R.anim.animlike);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        appPreferences = AppPreferences.getInstance(context);
     }
 
     @Override
@@ -162,7 +165,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 final Post postHeader = listPost.get(position);
                 final HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-                headerViewHolder.imageViewCover.setImageResource(R.drawable.bogiaothong);
+                Glide.with(context).load(postHeader.getImg()).into(headerViewHolder.imageViewCover);
                 headerViewHolder.textViewTitile.setText(postHeader.getTitle());
                 Blur blur = new Blur(context);
                 blur.applyBlur(headerViewHolder.imageViewCover, headerViewHolder.textViewTitile);
@@ -221,7 +224,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         final Post post = dataSnapshot.getValue(Post.class);
                         final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                         //imageCover
-                        itemViewHolder.imageViewCover.setImageResource(R.drawable.bogiaothong);
+                        Glide.with(context).load(post.getImg()).into(itemViewHolder.imageViewCover);
                         itemViewHolder.textViewTitile.setText(post.getTitle());
 
                         itemViewHolder.textViewCategory.setText(post.getcategory());
@@ -317,7 +320,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         if (listPostOfCategory != null && listPostOfCategory.size() > 0) {
                             final Post post1 = listPostOfCategory.get(0);
                             categoryViewHolder.linearLayoutPost1.setVisibility(View.VISIBLE);
-                            categoryViewHolder.imageViewPost1.setImageResource(R.drawable.bogiaothong);
+                            Glide.with(context).load(post1.getImg()).into(categoryViewHolder.imageViewPost1);
                             categoryViewHolder.textViewTitlePost1.setText(post1.getTitle());
                             categoryViewHolder.linearLayoutPost1.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -328,7 +331,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (listPostOfCategory.size() > 1) {
                                 final Post post2 = listPostOfCategory.get(1);
                                 categoryViewHolder.linearLayoutPost2.setVisibility(View.VISIBLE);
-                                categoryViewHolder.imageViewPost2.setImageResource(R.drawable.bogiaothong);
+                                Glide.with(context).load(post2.getImg()).into(categoryViewHolder.imageViewPost2);
                                 categoryViewHolder.textViewDescriptionPost2.setText(post2.getDescription());
                                 categoryViewHolder.linearLayoutPost2.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -340,7 +343,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (listPostOfCategory.size() > 2) {
                                 final Post post3 = listPostOfCategory.get(2);
                                 categoryViewHolder.linearLayoutPost3.setVisibility(View.VISIBLE);
-                                categoryViewHolder.imageViewPost3.setImageResource(R.drawable.bogiaothong);
+                                Glide.with(context).load(post3.getImg()).into(categoryViewHolder.imageViewPost3);
                                 categoryViewHolder.textViewDescriptionPost3.setText(post3.getDescription());
                                 categoryViewHolder.linearLayoutPost3.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -420,7 +423,7 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userId = GlobalStaticData.currentUser.getUserId();
+                String userId = appPreferences.getUserId();
                 long count = dataSnapshot.child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).getChildrenCount();
                 if (post.getUserLikeIds() != null && count > 0) {
                     if (post.getUserLikeIds().contains(userId)) {
@@ -444,29 +447,35 @@ public class SummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void onClickLikePost(final Post post, final ImageView imageViewLike) {
-        //get from user_post
-        String userId = GlobalStaticData.currentUser.getUserId();
-        if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
-            //if user liked this post
-            if (post.getUserLikeIds().contains(userId)) {
-                post.getUserLikeIds().remove(userId);
-                databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+        if(appPreferences.isLogin()) {
+            //get from user_post
+            String userId = appPreferences.getUserId();
+            if (post.getUserLikeIds() != null && post.getUserLikeIds().size() > 0) {
+                //if user liked this post
+                if (post.getUserLikeIds().contains(userId)) {
+                    post.getUserLikeIds().remove(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                } else {
+                    post.getUserLikeIds().add(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                }
             } else {
+                post.setUserLikeIds(new ArrayList<String>());
                 post.getUserLikeIds().add(userId);
                 databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(post.getUserLikeIds());
+                        .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId), new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        imageViewLike.startAnimation(hyperspaceJumpAnimation);
+                    }
+                });
             }
-        } else {
-            post.setUserLikeIds(new ArrayList<String>());
-            post.getUserLikeIds().add(userId);
-            databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                    .child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).child("0").setValue(String.valueOf(userId), new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    imageViewLike.startAnimation(hyperspaceJumpAnimation);
-                }
-            });
+        }
+        else{
+            Intent intentLogin = new Intent(context,Login.class);
+            context.startActivity(intentLogin);
         }
     }
 

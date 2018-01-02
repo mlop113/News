@@ -2,16 +2,18 @@ package com.android;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -36,20 +38,20 @@ import com.android.Activity_Fragment.PostsOnRequestActivity;
 import com.android.Activity_Fragment.Profile_Activity;
 import com.android.Adapters.CategoryAdapter;
 import com.android.Adapters.MyFragmentPagerAdapter;
-import com.android.Effect.Session;
 import com.android.Global.AppConfig;
+import com.android.Global.AppPreferences;
 import com.android.Global.GlobalFunction;
 import com.android.Global.GlobalStaticData;
 import com.android.Interface.IOnClickCategory;
 import com.android.Interface.IOnClickFilter;
 import com.android.Models.Post;
 import com.android.Models.UserMember;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.joooonho.SelectableRoundedImageView;
 
 import org.droidparts.widget.ClearableEditText;
 
@@ -62,6 +64,7 @@ import java.util.List;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements IOnClickCategory, ViewPager.OnPageChangeListener,TabHost.OnTabChangeListener,View.OnClickListener{
+    AppPreferences appPreferences;
     InputMethodManager inputMethodManager;
     //actionbar
     ImageButton imageButtonPlus;
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     //drawer and listCategory
     private RecyclerView recyclerViewCategory;
     RelativeLayout relativeLayoutUser;
+    ImageView imageViewUserAction;
     List<String> listCategory = new ArrayList<>();
     CategoryAdapter categoryAdapter;
     ClearableEditText editTextSearch;
@@ -86,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     TabHost tabHost;
 
     ViewPager viewPager;
-    Session session;
     //WheelDPicker
     WheelDayPicker wheelDayPicker;
     WheelMonthPicker wheelMonthPicker;
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        appPreferences  = AppPreferences.getInstance(this);
         //connect firebase
         //fireBase();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -120,35 +123,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
-        Bundle bundle=getIntent().getExtras();
-        session=new Session(this);
-         p=bundle.getString("username");
-         u=bundle.getString("userid");
 
-
-         if (u!=null)
-         {
-             SharedPreferences preferences= getSharedPreferences(u,MODE_PRIVATE);
-             SharedPreferences.Editor e = preferences.edit();
-             e.putString("userid2",u);// add or overwrite someValue
-             e.commit();
-             i = preferences.getString("userid2", null);
-             textViewUsername.setText(p);
-         }else {
-             u=i;
-             textViewUsername.setText(p);
-         }
-
-        textViewUsername.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this, Profile_Activity.class);
-                intent.putExtra("userid",u);
-                intent.putExtra("userid2",i);
-                startActivity(intent);
-            }
-        });
         //drawer contain layoutuser and listCategory
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -184,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     private void mappings() {
         //header contean Layoutuser
         relativeLayoutUser = (RelativeLayout) findViewById(R.id.relativeLayoutUser);
+        imageViewUserAction = findViewById(R.id.imageViewUserAction);
         editTextSearch = (ClearableEditText) findViewById(R.id.editTextSearch);
         //listCategory
         recyclerViewCategory= (RecyclerView) findViewById(R.id.recyclerViewCategory);
@@ -219,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
 
     private void event() {
         relativeLayoutUser.setOnClickListener(this);
+        imageViewUserAction.setOnClickListener(this);
         editTextSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -228,7 +205,62 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         });
 
     }
+    private void loadCurrentUser(){
+        if(appPreferences.isLogin()) {
+            AppPreferences appPreferences = AppPreferences.getInstance(this);
+            if (appPreferences.isLogin()) {
+                if (appPreferences.isLoginWithGoogle()) {
 
+                } else {
+
+                }
+
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).child(appPreferences.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        UserMember currentUser = dataSnapshot.getValue(UserMember.class);
+                        GlobalStaticData.setCurrentUser(currentUser);
+                        ImageView imageViewNotLogin = (ImageView) findViewById(R.id.imageViewNotLogin);
+                        ImageView selectableRIVAvatar =  findViewById(R.id.selectableRIVAvatar);
+                        Glide.with(MainActivity.this).load(currentUser.getImg()).into(selectableRIVAvatar);
+                        TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+                        imageViewNotLogin.setVisibility(View.GONE);
+                        selectableRIVAvatar.setVisibility(View.VISIBLE);
+                        textViewUsername.setText(currentUser.getName());
+                        if(android.os.Build.VERSION.SDK_INT >= 21){
+                            imageViewUserAction.setImageDrawable(getResources().getDrawable(R.drawable.ic_logout, getTheme()));
+                        } else {
+                            imageViewUserAction.setImageDrawable(getResources().getDrawable(R.drawable.ic_logout));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+    }
+
+    private void logout(){
+        appPreferences.setUserId("");
+        Toast.makeText(MainActivity.this, "Đã đăng xuất tài khoản!", Toast.LENGTH_SHORT).show();
+        appPreferences.setLogin(false);
+        ImageView imageViewNotLogin = (ImageView) findViewById(R.id.imageViewNotLogin);
+        ImageView selectableRIVAvatar = findViewById(R.id.selectableRIVAvatar);
+        TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+        imageViewNotLogin.setVisibility(View.VISIBLE);
+        selectableRIVAvatar.setVisibility(View.GONE);
+        textViewUsername.setText(getString(R.string.login));
+        if(android.os.Build.VERSION.SDK_INT >= 21){
+            imageViewUserAction.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_right, getTheme()));
+        } else {
+            imageViewUserAction.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_right));
+        }
+
+    }
     private void searchPost(final String strSearch){
         final List<Post> listPostSearch = new ArrayList<>();
         databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -326,14 +358,25 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         if(requestCode==AppConfig.REQUEST_CODE_LOGIN_FROM_LinearLayoutLogin && resultCode==AppConfig.RESULT_CODE_LOGIN)
         {
             UserMember user = (UserMember) data.getSerializableExtra(AppConfig.USER);
-            ImageView imageViewNotLogin = (ImageView) findViewById(R.id.imageViewNotLogin);
-            SelectableRoundedImageView selectableRIVAvatar = (SelectableRoundedImageView) findViewById(R.id.selectableRIVAvatar);
-       //     TextView textViewUsername = (TextView) findViewById(R.id.textViewUsername);
- //           imageViewNotLogin.setVisibility(View.GONE);
+            Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
+            if(Hot_Fragment.summary_adapter!=null){
+                Hot_Fragment.summary_adapter.notifyDataSetChanged();
+            }
+            if(New_Fragment.postsOnRequestAdapter!=null){
+                New_Fragment.postsOnRequestAdapter.notifyDataSetChanged();
+            }
 
-            selectableRIVAvatar.setVisibility(View.VISIBLE);
-      //      textViewUsername.setText(p);
-            Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
+        }
+
+        if(resultCode==AppConfig.RESULT_CODE_LOGOUT)
+        {
+            logout();
+            if(Hot_Fragment.summary_adapter!=null){
+                Hot_Fragment.summary_adapter.notifyDataSetChanged();
+            }
+            if(New_Fragment.postsOnRequestAdapter!=null){
+                New_Fragment.postsOnRequestAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -530,8 +573,53 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
         switch (v.getId())
         {
             case R.id.relativeLayoutUser:
-                Intent intent = new Intent(this, Login.class);
-                startActivityForResult(intent, AppConfig.REQUEST_CODE_LOGIN_FROM_LinearLayoutLogin);
+                if(appPreferences.isLogin()){
+                    //user profile
+                    Intent intent=new Intent(MainActivity.this, Profile_Activity.class);
+                    intent.putExtra("userid",appPreferences.getUserId());
+                    startActivityForResult(intent,1);
+                }
+                else {
+                    Intent intent = new Intent(this, Login.class);
+                    startActivityForResult(intent, AppConfig.REQUEST_CODE_LOGIN_FROM_LinearLayoutLogin);
+                }
+
+                break;
+            case R.id.imageViewUserAction:
+                if(appPreferences.isLogin()){
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(MainActivity.this);
+                    }
+                    builder.setTitle("Đăng xuất")
+                            .setMessage("Bạn có chắc muốn đăng xuất tài khoản?")
+                            .setPositiveButton("Đăng xuất", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                    logout();
+                                    if(Hot_Fragment.summary_adapter!=null){
+                                        Hot_Fragment.summary_adapter.notifyDataSetChanged();
+                                    }
+                                    if(New_Fragment.postsOnRequestAdapter!=null){
+                                        New_Fragment.postsOnRequestAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+                }
+                else {
+                    Intent intent = new Intent(this, Login.class);
+                    startActivityForResult(intent, AppConfig.REQUEST_CODE_LOGIN_FROM_LinearLayoutLogin);
+                }
                 break;
             case R.id.textViewCancel:
                 dialogFilter.dismiss();
@@ -586,6 +674,13 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
 
             }
         });
+        loadCurrentUser();
+        if(Hot_Fragment.summary_adapter!=null){
+            Hot_Fragment.summary_adapter.notifyDataSetChanged();
+        }
+        if(New_Fragment.postsOnRequestAdapter!=null){
+            New_Fragment.postsOnRequestAdapter.notifyDataSetChanged();
+        }
     }
 
 }

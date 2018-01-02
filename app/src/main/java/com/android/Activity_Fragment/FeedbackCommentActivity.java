@@ -17,8 +17,9 @@ import android.widget.Toast;
 
 import com.android.Adapters.FeedbackCommentAdapter;
 import com.android.Global.AppConfig;
-import com.android.Global.GlobalStaticData;
+import com.android.Global.AppPreferences;
 import com.android.Interface.IOnClickFeedback;
+import com.android.Login;
 import com.android.Models.Comment;
 import com.android.Models.Post;
 import com.android.Models.ReplyComment;
@@ -66,12 +67,13 @@ public class FeedbackCommentActivity extends AppCompatActivity implements View.O
     ImageView imageViewSend;
 
     DatabaseReference databaseReference;
+    AppPreferences appPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback_comment);
-
+        appPreferences = AppPreferences.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
@@ -150,25 +152,30 @@ public class FeedbackCommentActivity extends AppCompatActivity implements View.O
                 onClickLikeComment();
                 break;
             case R.id.linearLayoutSend:
-                Date myDate = new Date();
-                if(!TextUtils.isEmpty(editTextComment.getText().toString().trim())) {
-                    final ReplyComment replyComment = new ReplyComment(editTextComment.getText().toString().trim()
-                            ,new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(myDate),GlobalStaticData.currentUser.getUserId());
-                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_COMMENTS)
-                            .child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_REPLYCOMMENTS).push().setValue(replyComment, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            Toast.makeText(FeedbackCommentActivity.this, "sent", Toast.LENGTH_SHORT).show();
-                            editTextComment.clearFocus();
-                            editTextComment.setText("");
-                            inputMethodManager.hideSoftInputFromWindow(editTextComment.getWindowToken(),0);
-                            imageViewSend.startAnimation(animshake);
-                            recyclerViewFeedbackComment.smoothScrollToPosition(View.FOCUS_DOWN);
-                        }
-                    });
+                if(appPreferences.isLogin()) {
+                    Date myDate = new Date();
+                    if (!TextUtils.isEmpty(editTextComment.getText().toString().trim())) {
+                        final ReplyComment replyComment = new ReplyComment(editTextComment.getText().toString().trim()
+                                , new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(myDate), appPreferences.getUserId());
+                        databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId()).child(AppConfig.FIREBASE_FIELD_COMMENTS)
+                                .child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_REPLYCOMMENTS).push().setValue(replyComment, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                Toast.makeText(FeedbackCommentActivity.this, "sent", Toast.LENGTH_SHORT).show();
+                                editTextComment.clearFocus();
+                                editTextComment.setText("");
+                                inputMethodManager.hideSoftInputFromWindow(editTextComment.getWindowToken(), 0);
+                                imageViewSend.startAnimation(animshake);
+                                recyclerViewFeedbackComment.smoothScrollToPosition(View.FOCUS_DOWN);
+                            }
+                        });
 
 
-
+                    }
+                }
+                else{
+                    Intent intentLogin = new Intent(this,Login.class);
+                    startActivityForResult(intentLogin,AppConfig.REQUEST_CODE_LOGIN);
                 }
                 break;
         }
@@ -186,6 +193,7 @@ public class FeedbackCommentActivity extends AppCompatActivity implements View.O
     protected void onStart() {
         super.onStart();
         checkAction();
+        feedbackCommentAdapter.notifyDataSetChanged();
     }
     private void checkAction(){
         if(intent!=null){
@@ -211,7 +219,7 @@ public class FeedbackCommentActivity extends AppCompatActivity implements View.O
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(AppConfig.FIREBASE_FIELD_USERLIKEIDS)) {
-                    String userId = GlobalStaticData.currentUser.getUserId();
+                    String userId = appPreferences.getUserId();
                     Comment comment1 = dataSnapshot.getValue(Comment.class);
                     List<String> userLikeId = comment1.getUserLikeIds();
                     long count = dataSnapshot.child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).getChildrenCount();
@@ -240,26 +248,45 @@ public class FeedbackCommentActivity extends AppCompatActivity implements View.O
     }
 
     private void onClickLikeComment() {
-        String userId = GlobalStaticData.currentUser.getUserId();
-        //get from user_post
-        if (comment.getUserLikeIds() != null && comment.getUserLikeIds().size() > 0) {
-            //if user liked this post
-            if (comment.getUserLikeIds().contains(userId)) {
-                comment.getUserLikeIds().remove(userId);
-                databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                        .child(AppConfig.FIREBASE_FIELD_COMMENTS).child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(comment.getUserLikeIds());
+        if(appPreferences.isLogin()) {
+            String userId = appPreferences.getUserId();
+            //get from user_post
+            if (comment.getUserLikeIds() != null && comment.getUserLikeIds().size() > 0) {
+                //if user liked this post
+                if (comment.getUserLikeIds().contains(userId)) {
+                    comment.getUserLikeIds().remove(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_COMMENTS).child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(comment.getUserLikeIds());
+                } else {
+                    comment.getUserLikeIds().add(userId);
+                    databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
+                            .child(AppConfig.FIREBASE_FIELD_COMMENTS).child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(comment.getUserLikeIds());
+                    imageViewLike.startAnimation(animlike);
+                }
             } else {
+                comment.setUserLikeIds(new ArrayList<String>());
                 comment.getUserLikeIds().add(userId);
                 databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
                         .child(AppConfig.FIREBASE_FIELD_COMMENTS).child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(comment.getUserLikeIds());
                 imageViewLike.startAnimation(animlike);
             }
-        } else {
-            comment.setUserLikeIds(new ArrayList<String>());
-            comment.getUserLikeIds().add(userId);
-            databaseReference.child(AppConfig.FIREBASE_FIELD_POSTS).child(post.getPostId())
-                    .child(AppConfig.FIREBASE_FIELD_COMMENTS).child(comment.getCommentId()).child(AppConfig.FIREBASE_FIELD_USERLIKEIDS).setValue(comment.getUserLikeIds());
-            imageViewLike.startAnimation(animlike);
+        }
+        else{
+            Intent intentLogin = new Intent(this,Login.class);
+            startActivityForResult(intentLogin,AppConfig.REQUEST_CODE_LOGIN);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data==null) {
+            return;
+        }
+
+        if(requestCode==AppConfig.REQUEST_CODE_LOGIN && resultCode==AppConfig.RESULT_CODE_LOGIN)
+        {
+            feedbackCommentAdapter.notifyDataSetChanged();
         }
     }
 }

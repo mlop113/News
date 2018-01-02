@@ -14,6 +14,7 @@ import com.android.Activity_Fragment.PostDetailActivity;
 import com.android.Global.AppConfig;
 import com.android.Models.Post;
 import com.android.R;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.ViewHold
                 context.startActivity(intent);
             }
         });
+        Glide.with(context).load(postModel.getImg()).into(holder.imageViewCover);
     }
 
 

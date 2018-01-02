@@ -7,6 +7,8 @@ package com.android.Global;
 public class AppConfig {
     public static int REQUEST_CODE_LOGIN_FROM_LinearLayoutLogin = 1;
     public static int RESULT_CODE_LOGIN=2;
+    public static int RESULT_CODE_LOGOUT=3;
+    public static int REQUEST_CODE_LOGIN=4;
 
 
     public static String ACTION="action";

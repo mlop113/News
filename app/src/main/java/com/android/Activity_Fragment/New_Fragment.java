@@ -33,7 +33,7 @@ import java.util.List;
 public class New_Fragment extends Fragment implements IOnClickFilter {
     //RecyclerView summary
     public static RecyclerView recyclerViewSummary;
-    PostsOnRequestAdapter postsOnRequestAdapter;
+    public static PostsOnRequestAdapter postsOnRequestAdapter;
     static List<Post> listPost = new ArrayList<>();
     LayoutInflater inflater;
     View v;

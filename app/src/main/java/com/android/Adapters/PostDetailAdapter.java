@@ -14,6 +14,7 @@ import com.android.Global.GlobalFunction;
 import com.android.Models.Comment;
 import com.android.Models.Post;
 import com.android.R;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,7 +80,7 @@ public class PostDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         switch (holder.getItemViewType()){
             case ITEMVIEWTYPE_CONTENT:
                 final ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
-                contentViewHolder.imageViewCover.setImageResource(R.drawable.botruongbotainguyen);
+                Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
                 contentViewHolder.textViewTitile.setText(post.getTitle());
                 contentViewHolder.textViewCategory.setText(post.getcategory());
                 contentViewHolder.textViewDescription.setText(post.getDescription());
@@ -90,7 +91,7 @@ public class PostDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         post = dataSnapshot.getValue(Post.class);
-                        contentViewHolder.imageViewCover.setImageResource(R.drawable.botruongbotainguyen);
+                        Glide.with(context).load(post.getImg()).into(contentViewHolder.imageViewCover);
                         contentViewHolder.textViewTitile.setText(post.getTitle());
                         contentViewHolder.textViewCategory.setText(post.getcategory());
                         contentViewHolder.textViewDescription.setText(post.getDescription());
@@ -137,10 +138,10 @@ public class PostDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         for(DataSnapshot dataPost:dataSnapshot.getChildren()) {
                             Post p = dataPost.getValue(Post.class);
                             if (p.getcategory().equals(post.getcategory())) {
-                                relatedPosts.add(post);
-                                related_adapterCategory.setData(relatedPosts);
+                                relatedPosts.add(p);
                             }
                         }
+                        related_adapterCategory.setData(relatedPosts);
                     }
 
                     @Override

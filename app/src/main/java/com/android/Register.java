@@ -1,32 +1,26 @@
 package com.android;
 
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import com.android.Global.AppConfig;
-import com.android.Models.Post;
 import com.android.Models.UserMember;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.util.Date;
-import java.text.DateFormat;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Ngoc Vu on 12/28/2017.
@@ -81,22 +75,23 @@ public class Register extends AppCompatActivity {
         mdata.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean fLoginName = false;
                 for(DataSnapshot datauser : dataSnapshot.getChildren())
                 {
-                    if((datauser.getValue(UserMember.class).getLoginName().contentEquals(loginName)))
+                    if((!datauser.getValue(UserMember.class).getLoginName().contentEquals(loginName))&&password!=null) {
+
+                    }
+                    else
                     {
-                        Toast.makeText(Register.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
-
-                    } else {
-                            writeNewUser(address, dateCreate, email, "https://www.facebook.com/photo.php?fbid=1928810227435906&set=pcb.1928813470768915&type=3", loginName, name, password, phone, sex, datauser.getKey().toString());
-                             Toast.makeText(Register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                            Intent intentSearch = new Intent(Register.this, Login.class);
-                            startActivity(intentSearch);
-                                break;
-
-                        }
-
-
+                        Toast.makeText(Register.this,"tên đăng nhập đã tồn tại", Toast.LENGTH_SHORT).show();
+                        fLoginName = true;
+                    }
+                }
+                if(!fLoginName){
+                    writeNewUser(address, dateCreate, email, "https://firebasestorage.googleapis.com/v0/b/news-daeeb.appspot.com/o/icon_user.png?alt=media&token=73d0513e-c2d7-4eee-bfb9-114b222be49b", loginName, name, password, phone, sex,"");
+                    Toast.makeText(Register.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+                    Intent intentSearch = new Intent(Register.this, Login.class);
+                    startActivity(intentSearch);
                 }
             }
             @Override
@@ -114,7 +109,12 @@ public class Register extends AppCompatActivity {
 
     private void writeNewUser(final  String address,final String dateCreate, final String email,final String img,final String loginName,final String name,final String password,final String phone,final String sex,final String userid) {
         UserMember user = new UserMember(address, dateCreate,email,img,loginName,name,password,phone,sex,userid);
-        databaseReference.child("UserMembers").push().setValue(user);
+        databaseReference.child("UserMembers").push().setValue(user, new DatabaseReference.CompletionListener(){
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference1) {
+                databaseReference1.child("userId").setValue(databaseReference1.getKey());
+            }
+        });
         finish();
     //    CreateUser(address, dateCreate,email,img,loginName,name,password,phone,sex);
     }

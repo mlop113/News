@@ -9,6 +9,7 @@
     android:orientation="horizontal">
 
     <ImageView
+        android:id="@+id/imageViewUserComment"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="10dp"
@@ -142,6 +143,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/imageViewUserReply"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:scaleType="centerCrop"

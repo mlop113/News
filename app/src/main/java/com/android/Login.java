@@ -1,22 +1,18 @@
 package com.android;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.Effect.Session;
 import com.android.Global.AppConfig;
+import com.android.Global.AppPreferences;
+import com.android.Global.GlobalStaticData;
 import com.android.Models.UserMember;
 import com.android.RetrofitServices.Models_R.Api_Utils;
 import com.android.RetrofitServices.Models_R.ResponeServices;
@@ -27,8 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,16 +30,14 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.android.RetrofitServices.Models_R.ResponeServices;
-import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +49,6 @@ import retrofit2.Response;
 public class Login extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
     DatabaseReference databaseReference;
     private GoogleApiClient googleApiClient;
-    private Session session;
     private WeaService weaService;
     private SignInButton signInButton;
     public static final int SIGN_IN_CODE = 777;
@@ -67,16 +58,18 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     EditText edtpass;
     private String n;
     TextView txtLogin,txtforget,txtdangki,txtloca,txttemp;
+    //dialog wait
+    SpotsDialog progressDialog;
+
+    AppPreferences appPreferences;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        session =new Session(this);
-        if (session.loggedin())
-        {
-            startActivity(new Intent(Login.this,MainActivity.class));
-            finish();
-        }
+        //dialog
+        progressDialog = new SpotsDialog(this,R.style.CustomAlertDialog);
+        appPreferences = AppPreferences.getInstance(this);
+
         edtuser = findViewById(R.id.edtLoginName);
         edtpass=findViewById(R.id.edtPass);
         txtloca=findViewById(R.id.txtlocation);
@@ -225,9 +218,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     }
     private void Login(final String UserLoginName,final String password)
     {
+        progressDialog.show();
         databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean fSuccess=false;
                 for(DataSnapshot dataPost : dataSnapshot.getChildren())
                 {
                     if(dataPost.getValue(UserMember.class).getLoginName().contentEquals(UserLoginName))
@@ -235,25 +230,22 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         if(dataPost.getValue(UserMember.class).getPassword().contentEquals(password))
                         {
 
-                            String p = String.valueOf(dataPost.getValue(UserMember.class).getName());
-                             String u= String.valueOf(dataPost.getValue(UserMember.class).getUserId());
-                            session.setLoginin(true);
-
-
-                            Intent intent = new Intent(Login.this,MainActivity.class);
-
-                            intent.putExtra("username",p);
-                            intent.putExtra("userid",u);
-
-                            startActivity(intent);
+                            appPreferences.setLogin(true);
+                            appPreferences.setLoginWithGoogle(false);
+                            appPreferences.setUserId(dataPost.getKey());
+                            sendLoginResult(dataPost.getValue(UserMember.class));
+                            progressDialog.dismiss();
+                            fSuccess=true;
                         }
-                        else
-                        {
-                            Toast.makeText(Login.this,"Password hoặc Loginname không chính xác", Toast.LENGTH_SHORT).show();
-                            edtpass.setText(null);
+                        else{
+                            break;
                         }
                     }
-
+                }
+                if(!fSuccess){
+                    Toast.makeText(Login.this,"LoginName hoặc Password không chính xác", Toast.LENGTH_SHORT).show();
+                    edtpass.setText(null);
+                    progressDialog.dismiss();
                 }
             }
             @Override
@@ -261,6 +253,14 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
             }
         });
+    }
+
+    private void sendLoginResult(UserMember user){
+        GlobalStaticData.setCurrentUser(user);
+        Intent intent = new Intent();
+        intent.putExtra(AppConfig.USER,user);
+        setResult(AppConfig.RESULT_CODE_LOGIN,intent);
+        finish();
     }
 
     @Override
