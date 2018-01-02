@@ -37,6 +37,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -188,13 +191,40 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     }
     private void  handleSignInResult(GoogleSignInResult result)
     {
+
         if (result.isSuccess())
         {
+            Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show();
             firebaseAuthWithGoogle(result.getSignInAccount());
+            //FirebaseUser user = firebaseAuth.getCurrentUser();
+            /*if (user!=null)
+            {
+                appPreferences.setUserId(user.getUid());
+                appPreferences.setLogin(true);
+                appPreferences.setLoginWithGoogle(true);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String currentDateandTime = sdf.format(new Date());
+                UserMember newuser = new UserMember("", currentDateandTime,user.getEmail(),user.getPhotoUrl().toString(),user.getEmail(),user.getDisplayName(),"","","",user.getUid());
+                databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).child(user.getUid()).setValue(newuser, new DatabaseReference.CompletionListener(){
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference1) {
+                        databaseReference1.child("userId").setValue(databaseReference1.getKey());
+                    }
+                });
+                Toast.makeText(this, "Login Success2", Toast.LENGTH_SHORT).show();
+            }*/
+            appPreferences.setUserId(result.getSignInAccount().getId());
+            appPreferences.setLogin(true);
+            appPreferences.setLoginWithGoogle(true);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String currentDateandTime = sdf.format(new Date());
+            UserMember newuser = new UserMember("", currentDateandTime,result.getSignInAccount().getEmail(),result.getSignInAccount().getPhotoUrl().toString(),result.getSignInAccount().getEmail(),result.getSignInAccount().getDisplayName(),"","","",result.getSignInAccount().getId());
+            databaseReference.child(AppConfig.FIREBASE_FIELD_USERMEMBERS).child(result.getSignInAccount().getId()).setValue(newuser);
         }
         else
         {
-            Toast.makeText(this,"fail",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, result.getStatus().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"failed",Toast.LENGTH_SHORT).show();
         }
     }
     private void firebaseAuthWithGoogle( GoogleSignInAccount signInAccount)
@@ -206,6 +236,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
              if (!task.isSuccessful())
              {
                  Toast.makeText(getApplicationContext(),"Fail",Toast.LENGTH_SHORT).show();
+             }
+             else
+             {
+                 Toast.makeText(getApplicationContext(), "Login Success3", Toast.LENGTH_SHORT).show();
              }
             }
         });
@@ -270,7 +304,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     private void revokeAccess()
     {
         firebaseAuth.signOut();
-
     }
 }
 

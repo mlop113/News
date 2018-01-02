@@ -47,6 +47,7 @@ import com.android.Interface.IOnClickFilter;
 import com.android.Models.Post;
 import com.android.Models.UserMember;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -247,6 +248,10 @@ public class MainActivity extends AppCompatActivity implements IOnClickCategory,
     }
 
     private void logout(){
+        if(appPreferences.isLoginWithGoogle()){
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.signOut();
+        }
         appPreferences.setUserId("");
         Toast.makeText(MainActivity.this, "Đã đăng xuất tài khoản!", Toast.LENGTH_SHORT).show();
         appPreferences.setLogin(false);

@@ -16,6 +16,7 @@ import com.android.Global.AppPreferences;
 import com.android.Models.UserMember;
 import com.android.R;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -87,6 +88,10 @@ public class Profile_Activity extends AppCompatActivity {
     }
     private void logout()
     {
+        if(appPreferences.isLoginWithGoogle()){
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.signOut();
+        }
         appPreferences.setLogin(false);
         Intent intent = new Intent();
         setResult(AppConfig.RESULT_CODE_LOGOUT,intent);
